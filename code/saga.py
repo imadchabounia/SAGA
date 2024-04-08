@@ -2,6 +2,8 @@
 
 # Gaussian sampler
 from sampler import samplerz
+# Base Sampler
+from sampler import sampler0
 # Gaussian sampler with repetitions
 from sampler_rep import samplerz_rep
 # Imports Falcon signature scheme
@@ -127,6 +129,11 @@ class UnivariateSamples:
             # Fill histogram according to the samples
             else:
                 self.histogram[z] += 1
+                
+        #faut normaliser car dans les nouvelles versions de scipy c'est la résponsabilité de l'utilisateur (https://github.com/scipy/scipy/issues/14298)
+        freq_sum = sum(list(self.histogram.values()))
+        for _key in self.histogram:
+            self.histogram[_key] /= freq_sum
         # Empiric mean, variance, skewness, kurtosis and standard deviation
         self.mean = sum(list_samples) / self.nsamples
         self.variance = moment(list_samples, 2)
@@ -176,6 +183,15 @@ class UnivariateSamples:
         # The chi-square test require buckets to have enough elements,
         # so we aggregate samples in the left and right tails in two buckets
         exp_histogram = make_gaussian_pdt(self.exp_mu, self.exp_sigma)
+        #freq_sum = sum(list(exp_histogram.values()))
+        #for _key in exp_histogram:
+        #    exp_histogram[_key] /= freq_sum
+        #    print(round(exp_histogram[_key], 8))
+        #    exp_histogram[_key] = round(exp_histogram[_key], 8)
+            
+        #print("----------------------2eme histo---------------------------------")
+        #print(sum(list(exp_histogram.values())))
+        #print(exp_histogram)
         obs = list(histogram.values())
         exp = list(exp_histogram.values())
         z = 0
@@ -195,6 +211,9 @@ class UnivariateSamples:
         exp = [round(prob * self.nsamples) for prob in exp]
         diff = self.nsamples - sum(exp_histogram.values())
         exp_histogram[int(round(self.exp_mu))] += diff
+        #faut normaliser car dans les nouvelles versions de scipy c'est la résponsabilité de l'utilisateur (https://github.com/scipy/scipy/issues/14298)
+        freq_sum = sum(exp)
+        exp = [exp[i]/freq_sum for i in range(0, len(exp))]
         res = chisquare(obs, f_exp=exp)
         return res
 
@@ -709,12 +728,13 @@ def test_basesampler(mu, sigma):
     # generate data
     n = 100000
     mu = 0
-    sigma = 1.5
-    data = [samplerz(mu, sigma) for _ in range(n)]
-
+    sigma = 1.8205
+    #data = [samplerz(mu, sigma) for _ in range(n)]
+    data = [sampler0() for _ in range(n)]
     # histogram
     hist, bins = histogram(data, bins=abs(min(data)) + max(data))
     x = bins[:-1]
+    print(x)
     y1 = hist
     y2 = norm.pdf(x, mu, sigma) * n
     plt.bar(x, y1, width=1.25, color='blue', edgecolor='none', label='Gauss Samples')
