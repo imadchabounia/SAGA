@@ -131,9 +131,9 @@ class UnivariateSamples:
                 self.histogram[z] += 1
                 
         #faut normaliser car dans les nouvelles versions de scipy c'est la résponsabilité de l'utilisateur (https://github.com/scipy/scipy/issues/14298)
-        freq_sum = sum(list(self.histogram.values()))
-        for _key in self.histogram:
-            self.histogram[_key] /= freq_sum
+        #freq_sum = sum(list(self.histogram.values()))
+        #for _key in self.histogram:
+        #    self.histogram[_key] /= freq_sum
         # Empiric mean, variance, skewness, kurtosis and standard deviation
         self.mean = sum(list_samples) / self.nsamples
         self.variance = moment(list_samples, 2)
@@ -212,8 +212,10 @@ class UnivariateSamples:
         diff = self.nsamples - sum(exp_histogram.values())
         exp_histogram[int(round(self.exp_mu))] += diff
         #faut normaliser car dans les nouvelles versions de scipy c'est la résponsabilité de l'utilisateur (https://github.com/scipy/scipy/issues/14298)
-        freq_sum = sum(exp)
-        exp = [exp[i]/freq_sum for i in range(0, len(exp))]
+        freq_sum_exp = sum(exp)
+        exp = [exp[i]/freq_sum_exp for i in range(0, len(exp))]
+        freq_sum_obs = sum(obs)
+        obs = [obs[i]/freq_sum_obs for i in range(0, len(obs))]
         res = chisquare(obs, f_exp=exp)
         return res
 
