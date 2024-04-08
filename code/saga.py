@@ -208,15 +208,16 @@ class UnivariateSamples:
         exp[-2] += exp[-1]
         obs.pop(-1)
         exp.pop(-1)
-        exp = [round(prob * self.nsamples) for prob in exp]
+        print(exp)
+        exp = [prob * self.nsamples for prob in exp]
         diff = self.nsamples - sum(exp_histogram.values())
         exp_histogram[int(round(self.exp_mu))] += diff
-        #faut normaliser car dans les nouvelles versions de scipy c'est la résponsabilité de l'utilisateur (https://github.com/scipy/scipy/issues/14298)
-        freq_sum_exp = sum(exp)
-        exp = [exp[i]/freq_sum_exp for i in range(0, len(exp))]
-        freq_sum_obs = sum(obs)
-        obs = [obs[i]/freq_sum_obs for i in range(0, len(obs))]
+        print(obs)
+        print(exp)
+        print(sum(obs))
+        print(sum(exp))
         res = chisquare(obs, f_exp=exp)
+        print(res)
         return res
 
 
