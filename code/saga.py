@@ -17,6 +17,7 @@ from scipy.stats import chisquare
 from scipy.stats import chi2, norm
 # Numpy stuff
 from numpy import cov, set_printoptions, diag, array, mean
+from numpy import sum as npsum
 from numpy.linalg import matrix_rank, inv, eig, eigh
 import matplotlib.pyplot as plt
 
@@ -32,6 +33,7 @@ from random import uniform
 # For HZ multivariate test, used in scipy.spatial.distance.mahalanobis
 from numpy import floor
 from numpy import tile
+
 
 # qqplot
 import scipy.stats as stats
@@ -208,16 +210,12 @@ class UnivariateSamples:
         exp[-2] += exp[-1]
         obs.pop(-1)
         exp.pop(-1)
-        print(exp)
-        exp = [prob * self.nsamples for prob in exp]
+        exp = [round(prob * self.nsamples) for prob in exp]
         diff = self.nsamples - sum(exp_histogram.values())
         exp_histogram[int(round(self.exp_mu))] += diff
-        print(obs)
-        print(exp)
-        print(sum(obs))
-        print(sum(exp))
-        res = chisquare(obs, f_exp=exp)
-        print(res)
+        obs = array(obs)
+        exp = array(exp)
+        res = chisquare(obs, (npsum(obs)/npsum(exp))*exp)
         return res
 
 
