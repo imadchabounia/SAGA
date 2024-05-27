@@ -131,6 +131,7 @@ def berexp(x, sf):
     sf is a scaling factor.
     """
     # FIXME
+    pp = exp(-x) * sf 
     p = int(exp(-x) * sf * (1 << berexp_p)) - 1
     i = berexp_p
     # Careful: in C, i must be unsigned otherwise it might loop forever!
@@ -139,12 +140,12 @@ def berexp(x, sf):
         r = randint(0, (1 << berexp_rand) - 1)
         # Si la randomness est plus faible que p, on accepte
         if r < ((p >> i) & rand_mask):
-            return True
+            return True, pp
         # Si la randomness est plus elevee que p, on refuse
         if r > ((p >> i) & rand_mask):
-            return False
+            return False, pp
         # Sinon, on continue jusqu'a ce que i = 0
-    return True
+    return True, pp
 
 
 def samplerz(center, sigma):
@@ -161,6 +162,7 @@ def samplerz(center, sigma):
         b = randint(0, 1)
         z = ((b << 1) - 1) * z0 + b
         x = ((z - c0) ** 2) / (2 * (sigma ** 2)) - (z0 ** 2) / (2 * (sigma0 ** 2))
-        if berexp(x, sf) is True:
+        f,p = berexp(x, sf)
+        if f is True:
             #print(counter)
-            return floor(center) + z
+            return floor(center) + z, p
